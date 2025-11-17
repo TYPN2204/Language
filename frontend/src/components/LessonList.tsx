@@ -51,13 +51,6 @@ export function LessonList({
                     >
                       Học ngay
                     </button>
-                    <button
-                      className="mini ghost"
-                      onClick={() => onCompleteLesson(lesson.baiHocId)}
-                      disabled={isProcessing}
-                    >
-                      Đánh dấu xong
-                    </button>
                   </div>
                 </li>
               ))}

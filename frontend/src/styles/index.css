@@ -16,6 +16,10 @@ body {
   margin: 0;
   min-height: 100vh;
   background: radial-gradient(circle at top, #1d4ed8 0%, #0b1120 55%, #020617 100%);
+}
+
+/* Login/Register pages */
+body:has(.app-shell) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,10 +28,6 @@ body {
 
 .app-shell {
   width: min(420px, 100%);
-}
-
-.app-shell.dashboard-mode {
-  width: min(1100px, 100%);
 }
 
 .auth-card {
@@ -614,5 +614,181 @@ body {
   border-radius: 1rem;
   padding: 0.75rem;
   background: rgba(15, 23, 42, 0.6);
+}
+
+/* Page container styles cho các trang zone */
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #030712;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #f1f5f9;
+}
+
+.back-button {
+  border: none;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.back-button:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateX(-2px);
+}
+
+.page-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Hearts display cho game học tập */
+.hearts-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 0.75rem;
+}
+
+.hearts-label {
+  font-weight: 600;
+  color: #fca5a5;
+  font-size: 0.9rem;
+}
+
+.hearts-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.heart {
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.heart.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.heart.lost {
+  opacity: 0.3;
+  transform: scale(0.8);
+  filter: grayscale(100%);
+}
+
+.lesson-game-over,
+.lesson-completed {
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.lesson-game-over {
+  background: rgba(239, 68, 68, 0.2);
+  border: 2px solid rgba(239, 68, 68, 0.5);
+}
+
+.lesson-game-over h3 {
+  color: #fca5a5;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.lesson-completed {
+  background: rgba(34, 197, 94, 0.2);
+  border: 2px solid rgba(34, 197, 94, 0.5);
+}
+
+.lesson-completed h3 {
+  color: #86efac;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+/* Arcade Panel styles */
+.arcade-info {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.energy-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.energy-button {
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.15);
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.energy-button:hover.affordable {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.energy-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(50%);
+}
+
+.energy-hint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 400;
 }
 

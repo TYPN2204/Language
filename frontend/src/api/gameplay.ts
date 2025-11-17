@@ -11,7 +11,9 @@ import type {
   SubmitAnswerRequest,
   SubmitAnswerResponse,
   ChatbotRequest,
-  ChatbotResponse
+  ChatbotResponse,
+  MatchingGameDataResponse,
+  MatchingGameWinRequest
 } from '../types/gameplay';
 
 export const GameplayApi = {
@@ -62,6 +64,16 @@ export const GameplayApi = {
 
   async askChatbot(payload: ChatbotRequest): Promise<ChatbotResponse> {
     const { data } = await httpClient.post<ChatbotResponse>('/chatbot/ask', payload);
+    return data;
+  },
+
+  async getMatchingGameData(): Promise<MatchingGameDataResponse> {
+    const { data } = await httpClient.get<MatchingGameDataResponse>('/arcade/matching-game/data');
+    return data;
+  },
+
+  async matchingGameWin(payload: MatchingGameWinRequest): Promise<StudentStatusResponse> {
+    const { data } = await httpClient.post<StudentStatusResponse>('/arcade/matching-game/win', payload);
     return data;
   }
 };

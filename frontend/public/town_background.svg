@@ -1,0 +1,96 @@
+<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7bb3f0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a8d0f0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="groundGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8bc34a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#689f38;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky Background -->
+  <rect width="1920" height="1080" fill="url(#skyGradient)"/>
+  
+  <!-- Sun -->
+  <circle cx="1600" cy="150" r="80" fill="#ffeb3b" opacity="0.9"/>
+  
+  <!-- Clouds -->
+  <ellipse cx="400" cy="120" rx="100" ry="50" fill="#ffffff" opacity="0.8"/>
+  <ellipse cx="450" cy="120" rx="80" ry="40" fill="#ffffff" opacity="0.8"/>
+  <ellipse cx="350" cy="120" rx="70" ry="35" fill="#ffffff" opacity="0.8"/>
+  
+  <ellipse cx="1200" cy="200" rx="120" ry="60" fill="#ffffff" opacity="0.7"/>
+  <ellipse cx="1280" cy="200" rx="100" ry="50" fill="#ffffff" opacity="0.7"/>
+  
+  <!-- Ground -->
+  <rect y="800" width="1920" height="280" fill="url(#groundGradient)"/>
+  
+  <!-- Road -->
+  <polygon points="0,900 500,900 600,1080 0,1080" fill="#5a5a5a" opacity="0.6"/>
+  <polygon points="600,1080 500,900 800,900 700,1080" fill="#4a4a4a" opacity="0.6"/>
+  <polygon points="700,1080 800,900 1200,900 1100,1080" fill="#5a5a5a" opacity="0.6"/>
+  <polygon points="1100,1080 1200,900 1920,900 1920,1080" fill="#4a4a4a" opacity="0.6"/>
+  
+  <!-- Building 1: School (Left) -->
+  <rect x="200" y="500" width="180" height="300" fill="#fff9c4" stroke="#f9a825" stroke-width="3"/>
+  <rect x="210" y="520" width="60" height="80" fill="#2196f3" opacity="0.7"/>
+  <rect x="280" y="520" width="60" height="80" fill="#2196f3" opacity="0.7"/>
+  <rect x="210" y="610" width="60" height="80" fill="#2196f3" opacity="0.7"/>
+  <rect x="280" y="610" width="60" height="80" fill="#2196f3" opacity="0.7"/>
+  <polygon points="200,500 290,450 380,500" fill="#d32f2f"/>
+  <rect x="270" y="450" width="40" height="30" fill="#ffa726"/>
+  <text x="280" y="720" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333" text-anchor="middle">🏫 Trường học</text>
+  
+  <!-- Building 2: Arcade (Center-Right) -->
+  <rect x="900" y="550" width="200" height="250" fill="#f8bbd0" stroke="#e91e63" stroke-width="3"/>
+  <rect x="920" y="570" width="70" height="100" fill="#e91e63" opacity="0.6"/>
+  <rect x="1010" y="570" width="70" height="100" fill="#e91e63" opacity="0.6"/>
+  <rect x="920" y="680" width="70" height="80" fill="#e91e63" opacity="0.6"/>
+  <rect x="1010" y="680" width="70" height="80" fill="#e91e63" opacity="0.6"/>
+  <polygon points="900,550 1000,500 1100,550" fill="#c2185b"/>
+  <circle cx="1000" cy="520" r="15" fill="#fff59d"/>
+  <text x="1000" y="830" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333" text-anchor="middle">🎮 Arcade</text>
+  
+  <!-- Building 3: Shop (Right) -->
+  <rect x="1400" y="600" width="160" height="200" fill="#c5e1a5" stroke="#689f38" stroke-width="3"/>
+  <rect x="1410" y="620" width="50" height="70" fill="#388e3c" opacity="0.7"/>
+  <rect x="1480" y="620" width="50" height="70" fill="#388e3c" opacity="0.7"/>
+  <rect x="1410" y="700" width="50" height="70" fill="#388e3c" opacity="0.7"/>
+  <rect x="1480" y="700" width="50" height="70" fill="#388e3c" opacity="0.7"/>
+  <polygon points="1400,600 1480,560 1560,600" fill="#558b2f"/>
+  <rect x="1460" y="560" width="40" height="25" fill="#fff9c4"/>
+  <text x="1480" y="840" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333" text-anchor="middle">🛒 Cửa hàng</text>
+  
+  <!-- Building 4: Leaderboard (Top Right) -->
+  <rect x="1550" y="400" width="150" height="180" fill="#90caf9" stroke="#1976d2" stroke-width="3"/>
+  <rect x="1560" y="420" width="60" height="60" fill="#1976d2" opacity="0.6"/>
+  <rect x="1630" y="420" width="60" height="60" fill="#1976d2" opacity="0.6"/>
+  <polygon points="1550,400 1625,370 1700,400" fill="#1565c0"/>
+  <circle cx="1625" cy="385" r="12" fill="#ffd54f"/>
+  <text x="1625" y="620" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#333" text-anchor="middle">🏆 Bảng xếp hạng</text>
+  
+  <!-- Building 5: Chatbot (Center-Left) -->
+  <rect x="600" y="650" width="180" height="150" fill="#b39ddb" stroke="#7e57c2" stroke-width="3"/>
+  <rect x="620" y="670" width="60" height="60" fill="#7e57c2" opacity="0.6"/>
+  <rect x="700" y="670" width="60" height="60" fill="#7e57c2" opacity="0.6"/>
+  <polygon points="600,650 690,620 780,650" fill="#5e35b1"/>
+  <circle cx="690" cy="635" r="10" fill="#fff59d"/>
+  <text x="690" y="840" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#333" text-anchor="middle">🤖 Chatbot</text>
+  
+  <!-- Trees -->
+  <circle cx="100" cy="750" r="40" fill="#4caf50"/>
+  <rect x="95" y="750" width="10" height="50" fill="#8d6e63"/>
+  
+  <circle cx="1700" cy="780" r="50" fill="#66bb6a"/>
+  <rect x="1695" y="780" width="10" height="60" fill="#8d6e63"/>
+  
+  <circle cx="300" cy="850" r="35" fill="#81c784"/>
+  <rect x="297" y="850" width="6" height="50" fill="#8d6e63"/>
+  
+  <!-- Decorative elements -->
+  <text x="960" y="100" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#fff" text-anchor="middle" opacity="0.3">Thị Trấn Học Thuật</text>
+</svg>
+

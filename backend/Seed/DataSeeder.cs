@@ -179,6 +179,13 @@ public static class DataSeeder
         }
 
         await context.SaveChangesAsync();
+
+        // Gọi comprehensive seeder để thêm dữ liệu phong phú hơn
+        // Chỉ thêm nếu chưa có dữ liệu comprehensive (kiểm tra xem có khóa học "Từ Vựng Cơ Bản" chưa)
+        if (!await context.KhoaHocs.AnyAsync(k => k.TenKhoaHoc.Contains("Từ Vựng Cơ Bản")))
+        {
+            await ComprehensiveDataSeeder.SeedComprehensiveDataAsync(services);
+        }
     }
 }
 

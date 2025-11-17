@@ -104,3 +104,21 @@ export interface ChatbotResponse {
   lessonReference?: string | null;
 }
 
+export interface MatchingCardDto {
+  id: number;
+  text: string;
+  imageUrl: string;
+  pairId: number;
+}
+
+export interface MatchingGameDataResponse {
+  cards: MatchingCardDto[];
+}
+
+export interface MatchingGameWinRequest {
+  hocSinhId: number;
+  energySpent: number;
+  timeTaken: number;
+  pairsMatched: number;
+}
+

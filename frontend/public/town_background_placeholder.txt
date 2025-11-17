@@ -1,0 +1,9 @@
+PLACEHOLDER IMAGE FILE
+
+Tên file cần đặt: town_background.jpg
+
+Đây là file placeholder. Vui lòng thay thế bằng file ảnh town_background.jpg thực tế trong thư mục frontend/public/
+
+Kích thước khuyến nghị: 1920x1080px hoặc lớn hơn
+Format: JPG, PNG
+
