@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\LanguageApp.Api.props" />
+</Project>

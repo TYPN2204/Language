@@ -1,0 +1,118 @@
+{
+  "name": "LanguageApp Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "languageapp/chatbot",
+        "options": {}
+      },
+      "id": "Webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:5059/api/courses",
+        "responseFormat": "json"
+      },
+      "id": "FetchCourses",
+      "name": "Fetch Courses",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [560, 160]
+    },
+    {
+      "parameters": {
+        "mode": "list",
+        "options": {}
+      },
+      "id": "MergeKnowledge",
+      "name": "Merge Knowledge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [820, 300]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-4o-mini",
+        "conversationMode": "singlePrompt",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Bạn là trợ giảng của Game RPG Học Tập. Hãy dựa vào dữ liệu bài học để trả lời ngắn gọn, dễ hiểu."
+          },
+          {
+            "role": "user",
+            "content": "Câu hỏi: {{$json[\"question\"]}}\n\nKiến thức:\n{{$json[\"courses\"]}}"
+          }
+        ]
+      },
+      "id": "OpenAI",
+      "name": "OpenAI",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 2,
+      "position": [1080, 300]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "Respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Merge Knowledge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Courses": {
+      "main": [
+        [
+          {
+            "node": "Merge Knowledge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Knowledge": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
+
