@@ -12,6 +12,8 @@ public class StudentStatusResponse
 
     public int NangLuongGioChoi { get; set; }
 
+    public int SoVeChoiGame { get; set; }
+
     public int CompletedLessons { get; set; }
 
     public IReadOnlyCollection<OwnedRewardDto> Inventory { get; set; } = Array.Empty<OwnedRewardDto>();

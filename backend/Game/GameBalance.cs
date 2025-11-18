@@ -8,5 +8,6 @@ public static class GameBalance
     public const int ArcadeEnergyStep = 5;
     public const int ArcadeRewardMultiplierMin = 2;
     public const int ArcadeRewardMultiplierMax = 5;
+    public const int TicketPriceGems = 50; // 50 💎 = 1 vé
 }
 

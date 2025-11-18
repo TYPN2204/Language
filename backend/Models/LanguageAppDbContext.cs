@@ -101,6 +101,7 @@ public partial class LanguageAppDbContext : DbContext
             entity.Property(e => e.NangLuongGioChoi).HasDefaultValue(0);
             entity.Property(e => e.NgayTao).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.TongDiem).HasDefaultValue(0);
+            entity.Property(e => e.SoVeChoiGame).HasDefaultValue(0);
 
             entity.HasMany(d => d.PhuHuynhs).WithMany(p => p.HocSinhs)
                 .UsingEntity<Dictionary<string, object>>(

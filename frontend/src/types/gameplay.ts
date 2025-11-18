@@ -32,6 +32,7 @@ export interface StudentStatusResponse {
   email?: string | null;
   tongDiem: number;
   nangLuongGioChoi: number;
+  soVeChoiGame: number;
   completedLessons: number;
   inventory: OwnedRewardDto[];
   message?: string | null;
@@ -41,6 +42,7 @@ export interface CompleteLessonRequest {
   hocSinhId: number;
   baiHocId: number;
   diemSo: number;
+  remainingHearts: number;
 }
 
 export interface ArcadePlayRequest {

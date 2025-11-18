@@ -75,10 +75,13 @@ export function School({ auth }: SchoolProps) {
   const handleCompleteLesson = async (lessonId: number) => {
     setIsProcessingLesson(true);
     try {
+      // Nếu đang trong lesson, dùng số tim hiện tại, nếu không thì mặc định 3
+      const remainingHearts = hearts > 0 ? hearts : 3;
       const updatedStatus = await GameplayApi.completeLesson({
         hocSinhId,
         baiHocId: lessonId,
-        diemSo: 100
+        diemSo: 100,
+        remainingHearts
       });
       setStatus(updatedStatus);
       setFeedback(updatedStatus.message ?? 'Hoàn thành bài học!');
@@ -165,11 +168,13 @@ export function School({ auth }: SchoolProps) {
               const updatedStatus = await GameplayApi.completeLesson({
                 hocSinhId,
                 baiHocId: lessonDetail!.baiHocId,
-                diemSo: 100
+                diemSo: 100,
+                remainingHearts: hearts // Gửi số tim còn lại
               });
               setStatus(updatedStatus);
               setIsLessonCompleted(true);
-              setLessonFeedback('🎉 Chúc mừng! Bạn đã hoàn thành bài học và nhận được 25% năng lượng!');
+              // Message từ backend sẽ có format: "Tuyệt vời! Bạn nhận được X 💎!"
+              setLessonFeedback(updatedStatus.message || '🎉 Chúc mừng! Bạn đã hoàn thành bài học!');
               setLessonFeedbackType('success');
             } catch (error) {
               console.error(error);

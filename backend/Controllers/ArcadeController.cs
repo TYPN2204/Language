@@ -107,6 +107,31 @@ public class ArcadeController : ControllerBase
         return Ok(status);
     }
 
+    [HttpPost("use-ticket")]
+    public async Task<ActionResult<TicketResponse>> UseTicket(UseTicketRequest request)
+    {
+        var hocSinh = await _context.HocSinhs.FirstOrDefaultAsync(h => h.HocSinhID == request.HocSinhId);
+        if (hocSinh is null)
+        {
+            return NotFound(new { message = "Không tìm thấy học sinh." });
+        }
+
+        var currentTickets = hocSinh.SoVeChoiGame ?? 0;
+        if (currentTickets < 1)
+        {
+            return BadRequest(new { message = "Bạn không có vé chơi game. Hãy mua vé tại cửa hàng!" });
+        }
+
+        hocSinh.SoVeChoiGame = currentTickets - 1;
+        await _context.SaveChangesAsync();
+
+        return Ok(new TicketResponse
+        {
+            SoVeChoiGame = hocSinh.SoVeChoiGame ?? 0,
+            Message = "Bạn đã sử dụng 1 vé chơi game thành công!"
+        });
+    }
+
     // Deprecated: Giữ lại để backward compatibility nhưng không dùng nữa
     [HttpPost("play")]
     [Obsolete("Sử dụng matching-game/win thay vì endpoint này")]

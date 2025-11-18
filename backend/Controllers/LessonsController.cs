@@ -145,13 +145,32 @@ public class LessonsController : ControllerBase
 
         _context.TienDos.Add(tienDo);
 
-        var currentEnergy = hocSinh.NangLuongGioChoi ?? 0;
-        var updatedEnergy = Math.Min(GameBalance.MaxEnergy, currentEnergy + GameBalance.LessonEnergyGain);
-        hocSinh.NangLuongGioChoi = updatedEnergy;
+        // Tính toán Đá Quý dựa trên số tim còn lại
+        int gemsAwarded = 0;
+        switch (request.RemainingHearts)
+        {
+            case 3:
+                gemsAwarded = 15;
+                break;
+            case 2:
+                gemsAwarded = 10;
+                break;
+            case 1:
+                gemsAwarded = 5;
+                break;
+            default:
+                gemsAwarded = 0;
+                break;
+        }
+
+        // Cộng Đá Quý vào TongDiem
+        hocSinh.TongDiem = (hocSinh.TongDiem ?? 0) + gemsAwarded;
 
         await _context.SaveChangesAsync();
 
-        var message = $"Bạn đã hoàn thành \"{lesson.TenBaiHoc}\" và nạp +{updatedEnergy - currentEnergy}% năng lượng!";
+        var message = gemsAwarded > 0
+            ? $"Tuyệt vời! Bạn nhận được {gemsAwarded} 💎!"
+            : $"Bạn đã hoàn thành \"{lesson.TenBaiHoc}\"!";
         var status = await StudentStatusFactory.CreateAsync(_context, hocSinh, message);
         return Ok(status);
     }

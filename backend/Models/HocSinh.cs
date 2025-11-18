@@ -30,6 +30,8 @@ public partial class HocSinh
 
     public int? NangLuongGioChoi { get; set; }
 
+    public int? SoVeChoiGame { get; set; }
+
     [InverseProperty("HocSinh")]
     public virtual ICollection<BangXepHang> BangXepHangs { get; set; } = new List<BangXepHang>();
 

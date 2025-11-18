@@ -12,7 +12,8 @@ CREATE TABLE HocSinh (
     Email NVARCHAR(100) UNIQUE,
     NgayTao DATETIME DEFAULT GETDATE(),
     TongDiem INT DEFAULT 0, -- Chính là tiền tệ "Đá Quý" 💎
-    NangLuongGioChoi INT DEFAULT 0 -- Thanh năng lượng từ 0-100%
+    NangLuongGioChoi INT DEFAULT 0, -- Thanh năng lượng từ 0-100%
+    SoVeChoiGame INT DEFAULT 0 -- Số vé chơi game 🎫
 );
 
 CREATE TABLE PhuHuynh (

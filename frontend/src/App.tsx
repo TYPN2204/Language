@@ -9,6 +9,7 @@ import { Arcade } from './pages/Arcade';
 import { Shop } from './pages/Shop';
 import { Leaderboard } from './pages/Leaderboard';
 import { Chatbot } from './pages/Chatbot';
+import { MatchingCardsGamePage } from './pages/MatchingCardsGamePage';
 import type { AuthMode, AuthResponse } from './types/auth';
 
 function ProtectedRoute({ children, auth }: { children: React.ReactNode; auth: AuthResponse | null }) {
@@ -101,6 +102,14 @@ function AppContent() {
           element={
             <ProtectedRoute auth={authResult}>
               <Chatbot auth={authResult} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/games/matching-cards"
+          element={
+            <ProtectedRoute auth={authResult}>
+              <MatchingCardsGamePage auth={authResult} />
             </ProtectedRoute>
           }
         />

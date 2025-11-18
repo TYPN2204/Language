@@ -15,6 +15,7 @@ import type {
   MatchingGameDataResponse,
   MatchingGameWinRequest
 } from '../types/gameplay';
+import type { BuyTicketRequest, UseTicketRequest, TicketResponse } from '../types/tickets';
 
 export const GameplayApi = {
   async getStatus(hocSinhId: number): Promise<StudentStatusResponse> {
@@ -74,6 +75,21 @@ export const GameplayApi = {
 
   async matchingGameWin(payload: MatchingGameWinRequest): Promise<StudentStatusResponse> {
     const { data } = await httpClient.post<StudentStatusResponse>('/arcade/matching-game/win', payload);
+    return data;
+  },
+
+  async buyTicket(payload: BuyTicketRequest): Promise<StudentStatusResponse> {
+    const { data } = await httpClient.post<StudentStatusResponse>('/shop/buy-ticket', payload);
+    return data;
+  },
+
+  async useTicket(payload: UseTicketRequest): Promise<TicketResponse> {
+    const { data } = await httpClient.post<TicketResponse>('/arcade/use-ticket', payload);
+    return data;
+  },
+
+  async getTickets(hocSinhId: number): Promise<TicketResponse> {
+    const { data } = await httpClient.get<TicketResponse>(`/me/tickets?hocSinhId=${hocSinhId}`);
     return data;
   }
 };

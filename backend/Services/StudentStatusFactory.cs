@@ -30,6 +30,7 @@ public static class StudentStatusFactory
             Email = hocSinh.Email,
             TongDiem = hocSinh.TongDiem ?? 0,
             NangLuongGioChoi = hocSinh.NangLuongGioChoi ?? 0,
+            SoVeChoiGame = hocSinh.SoVeChoiGame ?? 0,
             CompletedLessons = completedLessons,
             Inventory = inventory,
             Message = message

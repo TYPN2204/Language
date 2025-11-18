@@ -741,6 +741,38 @@ body:has(.app-shell) {
 }
 
 /* Arcade Panel styles */
+.ticket-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 215, 0, 0.1);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.ticket-icon {
+  font-size: 2rem;
+}
+
+.ticket-count {
+  font-size: 1.1rem;
+  color: #f1f5f9;
+}
+
+.ticket-count strong {
+  color: #ffd700;
+  font-size: 1.3rem;
+}
+
+.arcade-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
 .arcade-info {
   margin: 1.5rem 0;
   padding: 1rem;

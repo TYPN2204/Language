@@ -4,7 +4,7 @@ import { GameplayApi } from '../api/gameplay';
 import type { AuthResponse } from '../types/auth';
 import type { StudentStatusResponse } from '../types/gameplay';
 import { StatusCard } from '../components/StatusCard';
-import { MatchingCardsGame } from '../components/MatchingCardsGame';
+import { SlotMachine } from '../components/SlotMachine';
 
 interface ArcadeProps {
   auth: AuthResponse;
@@ -15,8 +15,8 @@ export function Arcade({ auth }: ArcadeProps) {
   const [status, setStatus] = useState<StudentStatusResponse | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
-  const [isPlayingGame, setIsPlayingGame] = useState(false);
-  const [energySpent, setEnergySpent] = useState(0);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [tickets, setTickets] = useState(0);
 
   const hocSinhId = auth.hocSinhId;
 
@@ -26,6 +26,7 @@ export function Arcade({ auth }: ArcadeProps) {
       try {
         const statusResponse = await GameplayApi.getStatus(hocSinhId);
         setStatus(statusResponse);
+        setTickets(statusResponse.soVeChoiGame);
         setFeedback(statusResponse.message ?? null);
       } catch (error) {
         console.error(error);
@@ -43,6 +44,7 @@ export function Arcade({ auth }: ArcadeProps) {
     try {
       const latest = await GameplayApi.getStatus(hocSinhId);
       setStatus(latest);
+      setTickets(latest.soVeChoiGame);
       setFeedback(latest.message ?? 'Đã cập nhật trạng thái mới nhất.');
     } catch (error) {
       console.error(error);
@@ -52,39 +54,47 @@ export function Arcade({ auth }: ArcadeProps) {
     }
   };
 
-  const handleStartGame = (energy: number) => {
-    setEnergySpent(energy);
-    setIsPlayingGame(true);
-    setFeedback(null);
-  };
+  const handleSpinSlot = async () => {
+    if (tickets < 1) {
+      setFeedback('Bạn không có vé chơi game. Hãy mua vé tại cửa hàng!');
+      return;
+    }
 
-  const handleGameWin = async (timeTaken: number, pairsMatched: number) => {
+    setIsLoadingStatus(true);
     try {
-      const updatedStatus = await GameplayApi.matchingGameWin({
-        hocSinhId,
-        energySpent,
-        timeTaken,
-        pairsMatched
-      });
+      // Sử dụng vé
+      const ticketResponse = await GameplayApi.useTicket({ hocSinhId });
+      setTickets(ticketResponse.soVeChoiGame);
+      
+      // Cập nhật status
+      const updatedStatus = await GameplayApi.getStatus(hocSinhId);
       setStatus(updatedStatus);
-      setFeedback(updatedStatus.message ?? '🎉 Chúc mừng! Bạn đã thắng Matching Game!');
-      setIsPlayingGame(false);
-      setEnergySpent(0);
-    } catch (error) {
+      
+      // Bắt đầu quay slot machine
+      setIsSpinning(true);
+      setFeedback(null);
+    } catch (error: any) {
       console.error(error);
-      setFeedback('Không thể cập nhật phần thưởng. Vui lòng thử lại.');
-      setIsPlayingGame(false);
+      setFeedback(error.response?.data?.message || 'Không thể sử dụng vé. Vui lòng thử lại.');
+      setIsLoadingStatus(false);
     }
   };
 
-  const handleCancelGame = () => {
-    setIsPlayingGame(false);
-    setEnergySpent(0);
-    setFeedback('Đã hủy game.');
+  const handleSelectGame = (gameName: string) => {
+    // Chuyển đến trang game tương ứng
+    if (gameName === 'Matching Cards') {
+      navigate('/games/matching-cards');
+    } else {
+      // Các game khác sẽ được implement sau
+      setFeedback(`Game "${gameName}" đang được phát triển. Vui lòng thử lại sau!`);
+      setIsSpinning(false);
+    }
   };
 
-  const currentEnergy = status?.nangLuongGioChoi ?? 0;
-  const spendableEnergy = Math.max(0, currentEnergy - (currentEnergy % 5));
+  const handleCancelSlot = () => {
+    setIsSpinning(false);
+    setFeedback('Đã hủy quay số.');
+  };
 
   return (
     <div className="page-container">
@@ -102,54 +112,49 @@ export function Arcade({ auth }: ArcadeProps) {
         </div>
 
         <div className="zone-content">
-          {isPlayingGame ? (
+          {isSpinning ? (
             <div className="panel">
-              <MatchingCardsGame
-                hocSinhId={hocSinhId}
-                energySpent={energySpent}
-                onWin={handleGameWin}
-                onCancel={handleCancelGame}
-              />
+              <SlotMachine onSelectGame={handleSelectGame} onCancel={handleCancelSlot} />
             </div>
           ) : (
             <div className="panel arcade-panel">
               <header>
                 <div>
                   <p className="eyebrow">Sân chơi Arcade</p>
-                  <h2>Matching Cards Game</h2>
+                  <h2>Quay số chọn game! 🎰</h2>
                   <p className="muted small">
-                    Lật các thẻ để tìm cặp từ vựng phù hợp. Thắng game để nhận 💎!
+                    Sử dụng vé chơi game để quay số và chọn một mini-game ngẫu nhiên!
                   </p>
                 </div>
               </header>
 
               <div className="arcade-info">
-                <p className="muted">
-                  Bạn đang có <strong>{currentEnergy}%</strong> năng lượng.
-                  Mỗi lượt chơi tiêu hao 5% năng lượng (bội số của 5).
-                </p>
-                {spendableEnergy < 5 && (
-                  <p className="muted" style={{ color: '#fca5a5' }}>
-                    ⚠️ Hoàn thành thêm bài học để nạp năng lượng nhé!
+                <div className="ticket-display">
+                  <span className="ticket-icon">🎫</span>
+                  <span className="ticket-count">Bạn đang có: <strong>{tickets}</strong> vé chơi game</span>
+                </div>
+                {tickets < 1 && (
+                  <p className="muted" style={{ color: '#fca5a5', marginTop: '1rem' }}>
+                    ⚠️ Bạn không có vé. Hãy mua vé tại cửa hàng (50 💎 = 1 vé)!
                   </p>
                 )}
               </div>
 
-              <div className="energy-buttons">
-                {[5, 10, 15, 20, 25].map((energy) => {
-                  const canAfford = energy <= spendableEnergy;
-                  return (
-                    <button
-                      key={energy}
-                      className={`energy-button ${canAfford ? 'affordable' : 'disabled'}`}
-                      onClick={() => canAfford && handleStartGame(energy)}
-                      disabled={!canAfford}
-                    >
-                      {energy}% ⚡
-                      <span className="energy-hint">Chơi với {energy}% năng lượng</span>
-                    </button>
-                  );
-                })}
+              <div className="arcade-actions">
+                <button
+                  className={`primary ${tickets < 1 ? 'disabled' : ''}`}
+                  onClick={handleSpinSlot}
+                  disabled={tickets < 1 || isLoadingStatus}
+                >
+                  {isLoadingStatus ? 'Đang xử lý...' : 'Sử dụng 1 vé và Quay số! 🎰'}
+                </button>
+                <button
+                  className="secondary"
+                  onClick={() => navigate('/shop')}
+                  style={{ marginTop: '1rem' }}
+                >
+                  Mua vé tại cửa hàng →
+                </button>
               </div>
             </div>
           )}
@@ -158,4 +163,3 @@ export function Arcade({ auth }: ArcadeProps) {
     </div>
   );
 }
-

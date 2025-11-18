@@ -1,4 +1,5 @@
 using LanguageApp.Api.DTOs.Game;
+using LanguageApp.Api.Game;
 using LanguageApp.Api.Models;
 using LanguageApp.Api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +70,33 @@ public class ShopController : ControllerBase
         await _context.SaveChangesAsync();
 
         var message = $"Bạn đã mua thành công \"{reward.TenPhanThuong}\"!";
+        var status = await StudentStatusFactory.CreateAsync(_context, hocSinh, message);
+        return Ok(status);
+    }
+
+    [HttpPost("buy-ticket")]
+    public async Task<ActionResult<StudentStatusResponse>> BuyTicket(BuyTicketRequest request)
+    {
+        var hocSinh = await _context.HocSinhs.FirstOrDefaultAsync(h => h.HocSinhID == request.HocSinhId);
+        if (hocSinh is null)
+        {
+            return NotFound(new { message = "Không tìm thấy học sinh." });
+        }
+
+        var totalCost = GameBalance.TicketPriceGems * request.Quantity;
+        var currentGems = hocSinh.TongDiem ?? 0;
+
+        if (currentGems < totalCost)
+        {
+            return BadRequest(new { message = $"Bạn chưa đủ 💎 để mua {request.Quantity} vé. Cần {totalCost} 💎 (hiện có: {currentGems} 💎)." });
+        }
+
+        hocSinh.TongDiem = currentGems - totalCost;
+        hocSinh.SoVeChoiGame = (hocSinh.SoVeChoiGame ?? 0) + request.Quantity;
+
+        await _context.SaveChangesAsync();
+
+        var message = $"Bạn đã mua thành công {request.Quantity} vé chơi game! (Đã trừ {totalCost} 💎)";
         var status = await StudentStatusFactory.CreateAsync(_context, hocSinh, message);
         return Ok(status);
     }

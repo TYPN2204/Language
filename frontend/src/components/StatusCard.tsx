@@ -33,6 +33,10 @@ export function StatusCard({ status, onRefresh, isLoading }: StatusCardProps) {
           <p className="stat-value">{status.tongDiem} 💎</p>
         </div>
         <div>
+          <p className="eyebrow">Vé chơi game</p>
+          <p className="stat-value">{status.soVeChoiGame} 🎫</p>
+        </div>
+        <div>
           <p className="eyebrow">Năng lượng</p>
           <p className="stat-value">{status.nangLuongGioChoi}%</p>
         </div>

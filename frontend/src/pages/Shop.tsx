@@ -73,6 +73,23 @@ export function Shop({ auth }: ShopProps) {
     }
   };
 
+  const handleBuyTicket = async (quantity: number = 1) => {
+    setIsPurchasing(true);
+    try {
+      const updatedStatus = await GameplayApi.buyTicket({
+        hocSinhId,
+        quantity
+      });
+      setStatus(updatedStatus);
+      setFeedback(updatedStatus.message ?? 'Đã mua vé thành công!');
+    } catch (error: any) {
+      console.error(error);
+      setFeedback(error.response?.data?.message || 'Mua vé thất bại. Kiểm tra số 💎 của bạn.');
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
+
   return (
     <div className="page-container">
       <header className="page-header">
@@ -89,6 +106,52 @@ export function Shop({ auth }: ShopProps) {
         </div>
 
         <div className="zone-content">
+          {/* Section mua vé */}
+          <div className="panel" style={{ marginBottom: '1.5rem' }}>
+            <header>
+              <div>
+                <p className="eyebrow">Đặc biệt</p>
+                <h2>🎫 Vé Chơi Game</h2>
+                <p className="muted small">
+                  Mua vé để quay số và chọn mini-game tại Arcade! (50 💎 = 1 vé)
+                </p>
+              </div>
+            </header>
+            <div style={{ marginTop: '1rem' }}>
+              <p className="muted">
+                Bạn đang có: <strong>{status?.soVeChoiGame ?? 0} 🎫</strong> vé
+              </p>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                <button
+                  className="primary"
+                  onClick={() => handleBuyTicket(1)}
+                  disabled={isPurchasing || (status?.tongDiem ?? 0) < 50}
+                >
+                  Mua 1 vé (50 💎)
+                </button>
+                <button
+                  className="secondary"
+                  onClick={() => handleBuyTicket(2)}
+                  disabled={isPurchasing || (status?.tongDiem ?? 0) < 100}
+                >
+                  Mua 2 vé (100 💎)
+                </button>
+                <button
+                  className="secondary"
+                  onClick={() => handleBuyTicket(5)}
+                  disabled={isPurchasing || (status?.tongDiem ?? 0) < 250}
+                >
+                  Mua 5 vé (250 💎)
+                </button>
+              </div>
+              {(status?.tongDiem ?? 0) < 50 && (
+                <p className="muted" style={{ color: '#fca5a5', marginTop: '0.5rem' }}>
+                  ⚠️ Bạn cần ít nhất 50 💎 để mua 1 vé
+                </p>
+              )}
+            </div>
+          </div>
+
           <ShopPanel
             rewards={rewards}
             owned={status?.inventory ?? []}

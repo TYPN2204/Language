@@ -39,6 +39,7 @@ public class AuthController : ControllerBase
             MatKhauHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
             TongDiem = 0,
             NangLuongGioChoi = 0,
+            SoVeChoiGame = 0,
             NgayTao = DateTime.UtcNow
         };
 
