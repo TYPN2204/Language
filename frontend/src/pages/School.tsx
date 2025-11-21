@@ -8,13 +8,13 @@ import type {
   StudentStatusResponse
 } from '../types/gameplay';
 import { StatusCard } from '../components/StatusCard';
-import { LessonList } from '../components/LessonList';
+import { LearningPath } from '../components/LearningPath';
+import { ExerciseHost } from '../components/ExerciseHost';
+import type { ExerciseDto } from '../types/gameplay';
 
 interface SchoolProps {
   auth: AuthResponse;
 }
-
-type AnswerOption = 'A' | 'B' | 'C' | 'D';
 
 export function School({ auth }: SchoolProps) {
   const navigate = useNavigate();
@@ -24,9 +24,11 @@ export function School({ auth }: SchoolProps) {
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
   const [isProcessingLesson, setIsProcessingLesson] = useState(false);
   const [lessonDetail, setLessonDetail] = useState<LessonDetailResponse | null>(null);
-  const [lessonQuestionIndex, setLessonQuestionIndex] = useState(0);
-  const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
-  const [correctAnswers, setCorrectAnswers] = useState<Set<number>>(new Set());
+  const [lessonExerciseIndex, setLessonExerciseIndex] = useState(0);
+  const [answeredExercises, setAnsweredExercises] = useState<number[]>([]);
+  const [correctExercises, setCorrectExercises] = useState<Set<number>>(new Set());
+  const [wrongExercises, setWrongExercises] = useState<number[]>([]); // Danh sách câu sai để làm lại
+  const [isReviewMode, setIsReviewMode] = useState(false); // Chế độ làm lại câu sai
   const [lessonFeedback, setLessonFeedback] = useState<string | null>(null);
   const [lessonFeedbackType, setLessonFeedbackType] = useState<'success' | 'error' | null>(null);
   const [lessonLoading, setLessonLoading] = useState(false);
@@ -47,9 +49,11 @@ export function School({ auth }: SchoolProps) {
         setStatus(statusResponse);
         setCourses(courseResponse);
         setFeedback(statusResponse.message ?? null);
+        console.log('Loaded courses:', courseResponse);
+        console.log('Loaded status:', statusResponse);
       } catch (error) {
-        console.error(error);
-        setFeedback('Không thể tải dữ liệu. Vui lòng kiểm tra API.');
+        console.error('Error loading school data:', error);
+        setFeedback('Không thể tải dữ liệu. Vui lòng kiểm tra API và đảm bảo backend đang chạy.');
       } finally {
         setIsLoadingStatus(false);
       }
@@ -98,9 +102,11 @@ export function School({ auth }: SchoolProps) {
     try {
       const detail = await GameplayApi.getLessonDetail(lessonId);
       setLessonDetail(detail);
-      setLessonQuestionIndex(0);
-      setAnsweredQuestions([]);
-      setCorrectAnswers(new Set());
+      setLessonExerciseIndex(0);
+      setAnsweredExercises([]);
+      setCorrectExercises(new Set());
+      setWrongExercises([]);
+      setIsReviewMode(false);
       setHearts(3);
       setIsGameOver(false);
       setIsLessonCompleted(false);
@@ -115,16 +121,26 @@ export function School({ auth }: SchoolProps) {
     }
   };
 
-  const currentQuestion =
-    lessonDetail?.questions[lessonQuestionIndex < 0 ? 0 : lessonQuestionIndex] ?? null;
+  // Lấy danh sách exercises hiện tại (có thể là exercises gốc hoặc câu sai để làm lại)
+  const getCurrentExercises = (): ExerciseDto[] => {
+    if (!lessonDetail) return [];
+    if (isReviewMode && wrongExercises.length > 0) {
+      // Chế độ làm lại: chỉ hiển thị các câu sai
+      return lessonDetail.exercises.filter((ex) => wrongExercises.includes(ex.cauHoiId));
+    }
+    return lessonDetail.exercises;
+  };
 
-  const handleSubmitAnswer = async (option: AnswerOption) => {
-    if (!currentQuestion || isGameOver || isLessonCompleted || isProcessingLesson) {
+  const currentExercises = getCurrentExercises();
+  const currentExercise = currentExercises[lessonExerciseIndex < 0 ? 0 : lessonExerciseIndex] ?? null;
+
+  const handleSubmitAnswer = async (answer: string) => {
+    if (!currentExercise || isGameOver || isLessonCompleted || isProcessingLesson) {
       return;
     }
     
-    // Không cho phép trả lời lại câu đã trả lời
-    if (answeredQuestions.includes(currentQuestion.cauHoiId)) {
+    // Không cho phép trả lời lại câu đã trả lời đúng
+    if (correctExercises.has(currentExercise.cauHoiId)) {
       return;
     }
 
@@ -132,15 +148,16 @@ export function School({ auth }: SchoolProps) {
     try {
       const response = await GameplayApi.submitAnswer({
         hocSinhId,
-        cauHoiId: currentQuestion.cauHoiId,
-        traLoi: option
+        cauHoiId: currentExercise.cauHoiId,
+        traLoi: answer
       });
       
       const isCorrect = response.correct;
-      setAnsweredQuestions((prev) => [...prev, currentQuestion.cauHoiId]);
-
+      
       if (isCorrect) {
-        setCorrectAnswers((prev) => new Set([...prev, currentQuestion.cauHoiId]));
+        setCorrectExercises((prev) => new Set([...prev, currentExercise.cauHoiId]));
+        // Xóa khỏi danh sách câu sai nếu có
+        setWrongExercises((prev) => prev.filter((id) => id !== currentExercise.cauHoiId));
         setLessonFeedbackType('success');
         setLessonFeedback(
           `✅ Đúng rồi! +${response.awardedGems} 💎, +${response.awardedEnergy}% năng lượng. ${response.explanation}`
@@ -155,39 +172,50 @@ export function School({ auth }: SchoolProps) {
             : prev
         );
 
-        // Kiểm tra xem đã trả lời đúng tất cả câu hỏi chưa
-        const allQuestions = lessonDetail?.questions.map((q) => q.cauHoiId) ?? [];
-        const newCorrectSet = new Set([...correctAnswers, currentQuestion.cauHoiId]);
-        const allAnswered = answeredQuestions.length + 1 >= allQuestions.length;
-        const allCorrect = allQuestions.every((id) => newCorrectSet.has(id));
+        // Kiểm tra xem đã trả lời đúng tất cả exercises chưa
+        const allExercises = getCurrentExercises();
+        const newCorrectSet = new Set([...correctExercises, currentExercise.cauHoiId]);
+        const allAnswered = answeredExercises.length + 1 >= allExercises.length;
+        const allCorrect = allExercises.every((ex) => newCorrectSet.has(ex.cauHoiId));
 
         if (allAnswered && allCorrect) {
-          // Tự động hoàn thành bài học
-          setTimeout(async () => {
-            try {
-              const updatedStatus = await GameplayApi.completeLesson({
-                hocSinhId,
-                baiHocId: lessonDetail!.baiHocId,
-                diemSo: 100,
-                remainingHearts: hearts // Gửi số tim còn lại
-              });
-              setStatus(updatedStatus);
-              setIsLessonCompleted(true);
-              // Message từ backend sẽ có format: "Tuyệt vời! Bạn nhận được X 💎!"
-              setLessonFeedback(updatedStatus.message || '🎉 Chúc mừng! Bạn đã hoàn thành bài học!');
-              setLessonFeedbackType('success');
-            } catch (error) {
-              console.error(error);
-              setLessonFeedback('Hoàn thành bài học nhưng không thể cập nhật trạng thái.');
-            }
-          }, 2000);
+          // Kiểm tra xem có câu sai nào cần làm lại không
+          if (!isReviewMode && wrongExercises.length > 0) {
+            // Chuyển sang chế độ làm lại câu sai
+            setTimeout(() => {
+              setIsReviewMode(true);
+              setLessonExerciseIndex(0);
+              setAnsweredExercises([]);
+              setLessonFeedback('🔄 Bắt đầu làm lại các câu sai...');
+              setLessonFeedbackType(null);
+            }, 2000);
+          } else {
+            // Hoàn thành bài học
+            setTimeout(async () => {
+              try {
+                const updatedStatus = await GameplayApi.completeLesson({
+                  hocSinhId,
+                  baiHocId: lessonDetail!.baiHocId,
+                  diemSo: 100,
+                  remainingHearts: hearts
+                });
+                setStatus(updatedStatus);
+                setIsLessonCompleted(true);
+                setLessonFeedback(updatedStatus.message || '🎉 Chúc mừng! Bạn đã hoàn thành bài học!');
+                setLessonFeedbackType('success');
+              } catch (error) {
+                console.error(error);
+                setLessonFeedback('Hoàn thành bài học nhưng không thể cập nhật trạng thái.');
+              }
+            }, 2000);
+          }
         } else {
-          // Tự động chuyển câu hỏi sau 2 giây
+          // Tự động chuyển exercise sau 2 giây
           setTimeout(() => {
-            setLessonQuestionIndex((index) => {
+            setLessonExerciseIndex((index) => {
               const nextIndex = index + 1;
-              if (nextIndex >= allQuestions.length) {
-                return index; // Giữ nguyên nếu đã hết câu hỏi
+              if (nextIndex >= allExercises.length) {
+                return index;
               }
               return nextIndex;
             });
@@ -196,29 +224,34 @@ export function School({ auth }: SchoolProps) {
           }, 2000);
         }
       } else {
-        // Câu trả lời sai - mất 1 trái tim
+        // Câu trả lời sai
         const newHearts = hearts - 1;
         setHearts(newHearts);
+        
+        // Thêm vào danh sách câu sai (nếu chưa có)
+        if (!wrongExercises.includes(currentExercise.cauHoiId)) {
+          setWrongExercises((prev) => [...prev, currentExercise.cauHoiId]);
+        }
+        
         setLessonFeedbackType('error');
         setLessonFeedback(
           `❌ Chưa đúng. ${response.explanation} (Còn ${newHearts} ❤️)`
         );
 
         if (newHearts <= 0) {
-          // Game over - khóa bài học
           setIsGameOver(true);
           setTimeout(() => {
             setLessonFeedback('💔 Bạn đã hết mạng! Bài học đã bị khóa. Hãy thử lại sau.');
             setLessonFeedbackType('error');
           }, 2000);
         } else {
-          // Tự động chuyển câu hỏi sau 2 giây
+          // Tự động chuyển exercise sau 2 giây
           setTimeout(() => {
-            setLessonQuestionIndex((index) => {
+            setLessonExerciseIndex((index) => {
               const nextIndex = index + 1;
-              const allQuestions = lessonDetail?.questions.map((q) => q.cauHoiId) ?? [];
-              if (nextIndex >= allQuestions.length) {
-                return index; // Giữ nguyên nếu đã hết câu hỏi
+              const allExercises = getCurrentExercises();
+              if (nextIndex >= allExercises.length) {
+                return index;
               }
               return nextIndex;
             });
@@ -226,6 +259,11 @@ export function School({ auth }: SchoolProps) {
             setLessonFeedbackType(null);
           }, 2000);
         }
+      }
+      
+      // Đánh dấu đã trả lời
+      if (!answeredExercises.includes(currentExercise.cauHoiId)) {
+        setAnsweredExercises((prev) => [...prev, currentExercise.cauHoiId]);
       }
     } catch (error) {
       console.error(error);
@@ -251,13 +289,14 @@ export function School({ auth }: SchoolProps) {
           {feedback && <div className="panel info-panel">{feedback}</div>}
         </div>
 
-        <div className="zone-content two-column">
-          <LessonList
-            courses={courses}
-            onCompleteLesson={handleCompleteLesson}
-            isProcessing={isProcessingLesson}
-            onSelectLesson={handleSelectLesson}
-          />
+        <div className="zone-content learning-path-layout">
+          <div className="learning-path-section">
+            <LearningPath
+              courses={courses}
+              hocSinhId={hocSinhId}
+              onSelectLesson={handleSelectLesson}
+            />
+          </div>
           {lessonDetail ? (
             <div className="panel lesson-panel">
               <header>
@@ -284,41 +323,30 @@ export function School({ auth }: SchoolProps) {
                 </div>
               )}
 
-              {lessonLoading && <p>Đang tải câu hỏi...</p>}
-              {!lessonLoading && currentQuestion && !isGameOver && !isLessonCompleted && (
+              {lessonLoading && <p>Đang tải bài tập...</p>}
+              {!lessonLoading && currentExercise && !isGameOver && !isLessonCompleted && (
                 <>
-                  <p className="question">
-                    Câu {lessonQuestionIndex + 1}/{lessonDetail?.questions.length ?? 0}: {currentQuestion.noiDung}
-                  </p>
-                  <div className="options-grid">
-                    {[
-                      { key: 'A', text: currentQuestion.phuongAnA },
-                      { key: 'B', text: currentQuestion.phuongAnB },
-                      { key: 'C', text: currentQuestion.phuongAnC },
-                      { key: 'D', text: currentQuestion.phuongAnD }
-                    ].map((option) => {
-                      const isAnswered = answeredQuestions.includes(currentQuestion.cauHoiId);
-                      return (
-                        <button
-                          key={option.key}
-                          className="option-card"
-                          onClick={() => handleSubmitAnswer(option.key as AnswerOption)}
-                          disabled={isProcessingLesson || isAnswered}
-                        >
-                          <strong>{option.key}.</strong> {option.text}
-                        </button>
-                      );
-                    })}
+                  <div className="exercise-header">
+                    <p className="exercise-counter">
+                      {isReviewMode ? '🔄 Làm lại' : 'Bài tập'} {lessonExerciseIndex + 1}/{currentExercises.length}
+                      {isReviewMode && ` (${wrongExercises.length} câu sai)`}
+                    </p>
                   </div>
+                  <ExerciseHost
+                    exercise={currentExercise}
+                    onSubmit={handleSubmitAnswer}
+                    isProcessing={isProcessingLesson}
+                    isAnswered={correctExercises.has(currentExercise.cauHoiId)}
+                  />
                 </>
               )}
-              {!lessonLoading && !currentQuestion && lessonDetail && !isGameOver && !isLessonCompleted && (
+              {!lessonLoading && !currentExercise && lessonDetail && !isGameOver && !isLessonCompleted && (
                 <div className="lesson-finished">
-                  <p>Bạn đã trả lời hết câu hỏi cho bài này.</p>
+                  <p>Bạn đã trả lời hết bài tập cho bài này.</p>
                   <p className="muted">
-                    {correctAnswers.size === (lessonDetail.questions.length)
-                      ? 'Chúc mừng! Bạn đã trả lời đúng tất cả câu hỏi!'
-                      : `Bạn đã trả lời đúng ${correctAnswers.size}/${lessonDetail.questions.length} câu hỏi.`}
+                    {correctExercises.size === (lessonDetail.exercises.length)
+                      ? 'Chúc mừng! Bạn đã trả lời đúng tất cả bài tập!'
+                      : `Bạn đã trả lời đúng ${correctExercises.size}/${lessonDetail.exercises.length} bài tập.`}
                   </p>
                 </div>
               )}
@@ -348,7 +376,7 @@ export function School({ auth }: SchoolProps) {
             </div>
           ) : (
             <div className="panel lesson-panel">
-              <p>Chọn một bài học ở bên trái để bắt đầu.</p>
+              <p>Chọn một bài học trên con đường học tập để bắt đầu.</p>
             </div>
           )}
         </div>

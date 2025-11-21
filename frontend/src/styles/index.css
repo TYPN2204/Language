@@ -462,6 +462,17 @@ body:has(.app-shell) {
   gap: 1rem;
 }
 
+.zone-content.learning-path-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.learning-path-section {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
 .lesson-panel .question {
   font-size: 1.25rem;
   font-weight: 600;
@@ -472,6 +483,133 @@ body:has(.app-shell) {
   border-left: 4px solid #3b82f6;
   border-radius: 0.75rem;
   color: #e2e8f0;
+}
+
+.exercise-header {
+  margin-bottom: 1.5rem;
+}
+
+.exercise-counter {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 0.5rem;
+}
+
+.exercise-host {
+  width: 100%;
+}
+
+.exercise-trac-nghiem,
+.exercise-dich-cau,
+.exercise-dien-vao-cho-trong {
+  width: 100%;
+}
+
+.exercise-question,
+.exercise-instruction {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.6;
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 4px solid #3b82f6;
+  border-radius: 0.75rem;
+  color: #e2e8f0;
+}
+
+.source-sentence,
+.sentence-with-blanks {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 0.75rem;
+  border: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.sentence-text {
+  font-size: 1.2rem;
+  color: #e2e8f0;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.translation-input,
+.fill-blank-input {
+  margin-top: 1.5rem;
+}
+
+.translation-input label,
+.fill-blank-input label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.translation-textarea,
+.fill-blank-text-input {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 0.75rem;
+  color: #e2e8f0;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+.translation-textarea:focus,
+.fill-blank-text-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.submit-translation,
+.submit-fill-blank {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.audio-player {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.play-audio-button {
+  padding: 0.75rem 1.5rem;
+  background: rgba(139, 92, 246, 0.2);
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  border-radius: 0.5rem;
+  color: #e2e8f0;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.play-audio-button:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+.play-audio-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .options-grid {

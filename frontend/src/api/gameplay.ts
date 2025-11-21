@@ -13,7 +13,8 @@ import type {
   ChatbotRequest,
   ChatbotResponse,
   MatchingGameDataResponse,
-  MatchingGameWinRequest
+  MatchingGameWinRequest,
+  LessonProgressDto
 } from '../types/gameplay';
 import type { BuyTicketRequest, UseTicketRequest, TicketResponse } from '../types/tickets';
 
@@ -55,6 +56,11 @@ export const GameplayApi = {
 
   async getLessonDetail(lessonId: number): Promise<LessonDetailResponse> {
     const { data } = await httpClient.get<LessonDetailResponse>(`/lessons/${lessonId}/detail`);
+    return data;
+  },
+
+  async getProgress(hocSinhId: number): Promise<Record<number, LessonProgressDto>> {
+    const { data } = await httpClient.get<Record<number, LessonProgressDto>>(`/lessons/progress/${hocSinhId}`);
     return data;
   },
 

@@ -72,11 +72,27 @@ export interface QuizQuestionDto {
   phuongAnD: string;
 }
 
+export interface ExerciseDto {
+  cauHoiId: number;
+  loaiCauHoi: string;
+  noiDung: string;
+  audioURL?: string | null;
+  cauTienViet?: string | null;
+  cauTienAnh?: string | null;
+  phuongAnA?: string | null;
+  phuongAnB?: string | null;
+  phuongAnC?: string | null;
+  phuongAnD?: string | null;
+  dapAnDung?: string | null;
+}
+
 export interface LessonDetailResponse {
   baiHocId: number;
   tenBaiHoc: string;
   courseName?: string;
   questionCount: number;
+  exercises: ExerciseDto[];
+  // Deprecated: Sử dụng exercises thay thế
   questions: QuizQuestionDto[];
 }
 
@@ -122,5 +138,14 @@ export interface MatchingGameWinRequest {
   energySpent: number;
   timeTaken: number;
   pairsMatched: number;
+}
+
+export interface LessonProgressDto {
+  baiHocId: number;
+  soLanHoanThanh: number;
+  diemSo?: number | null;
+  ngayHoanThanh?: string | null;
+  isMastered: boolean;
+  isCompleted: boolean;
 }
 

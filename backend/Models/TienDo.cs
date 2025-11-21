@@ -21,6 +21,11 @@ public partial class TienDo
 
     public int? DiemSo { get; set; }
 
+    /// <summary>
+    /// Số lần đã hoàn thành bài học. Cần 2 lần để đạt "thông thạo" và mở khóa bài tiếp theo.
+    /// </summary>
+    public int SoLanHoanThanh { get; set; } = 0;
+
     [ForeignKey("BaiHocID")]
     [InverseProperty("TienDos")]
     public virtual BaiHoc? BaiHoc { get; set; }
